@@ -19,8 +19,7 @@ exports.index = function(req, res) {
   (async () => {
 
     let browser = await puppeteer.launch({
-      // headless : false,
-      args: ['--no-sandbox']
+      args: ['--no-sandbox','--disable-setuid-sandbox']
     });
 
     let page = await browser.newPage();
