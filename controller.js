@@ -32,7 +32,11 @@ exports.index = function(req, res) {
       waitUntil:'networkidle2',
       timeout: 0
     });
-  
+    
+    await page.waitForSelector('.train-name', {
+      visible: true,
+    });
+
     let data = await page.evaluate(() => {
       
       let train_name = document.getElementsByClassName("train-name");
