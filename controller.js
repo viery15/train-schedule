@@ -39,8 +39,11 @@ exports.index = function(req, res) {
         timeout: 10000
       });
     } catch(err) {
-      var msg = "Jadwal tidak ditemukan, coba cari rute lain.";
-      response.ok(msg, res);
+      var result = {
+        "msg" : "Jadwal tidak ditemukan, coba cari rute lain.",
+        "url" : url
+      }
+      response.ok(result, res);
       await browser.close();
     }
     
