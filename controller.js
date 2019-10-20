@@ -33,9 +33,17 @@ exports.index = function(req, res) {
       timeout: 0
     });
     
-    await page.waitForSelector('.train-name', {
-      visible: true,
-    });
+    try {
+      await page.waitForSelector('.train-name', {
+        visible: true,
+        timeout: 10000
+      });
+    } catch(err) {
+      var msg = "Jadwal tidak ditemukan, coba cari rute lain.";
+      response.ok(msg, res);
+      await browser.close();
+    }
+    
 
     let data = await page.evaluate(() => {
       
