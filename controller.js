@@ -23,7 +23,12 @@ exports.index = function(req, res) {
   (async () => {
 
     let browser = await puppeteer.launch({
-      args: ['--no-sandbox','--disable-setuid-sandbox']
+      headless: false,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-extensions",
+      ],
     });
 
     let page = await browser.newPage();
@@ -47,7 +52,6 @@ exports.index = function(req, res) {
       await browser.close();
     }
     
-
     let data = await page.evaluate(() => {
       
       let train_name = document.getElementsByClassName("train-name");
@@ -94,4 +98,3 @@ exports.index = function(req, res) {
   
   })();
 };
-
