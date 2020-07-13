@@ -1,8 +1,12 @@
 'use strict';
 
 module.exports = function(app) {
-    var todoList = require('./controller');
+    var train = require('./controller');
+    var twitter = require('./twitter');
 
     app.route('/')
-        .post(todoList.index);
+        .post(train.index);
+
+    app.route('/twitter')
+        .post(twitter.index);
 };
