@@ -173,7 +173,8 @@ exports.index = function (req, res) {
             }
         }
         response.ok(allPost, res);
-        console.log(allPost);
+        await browser.close();
+        // console.log(allPost);
     })();
 
 }
