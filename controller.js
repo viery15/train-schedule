@@ -11,40 +11,19 @@ exports.index = function (req, res) {
   ); // If needed
   //res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
   //res.setHeader('Access-Control-Allow-Credentials', true); // If needed
-  var city_from = req.body.from;
-  var city_to = req.body.to;
-  var station_from = req.body.stationfrom;
-  var station_to = req.body.stationto;
+  // var city_from = req.body.from;
+  // var city_to = req.body.to;
+  // var station_from = req.body.stationfrom;
+  // var station_to = req.body.stationto;
   var ori = req.body.ori;
   var dest = req.body.dest;
   var date = req.body.date;
   var adult = req.body.adult;
   var infant = req.body.infant;
 
-  var url =
-    "https://tiket.tokopedia.com/kereta-api/search/" +
-    city_from +
-    "-" +
-    station_from +
-    "-" +
-    ori +
-    "/" +
-    city_to +
-    "-" +
-    station_to +
-    "-" +
-    dest +
-    "?adult=" +
-    adult +
-    "&infant=" +
-    infant +
-    "&trip=departure&dep_date=" +
-    date +
-    "&ori=" +
-    ori +
-    "&dest=" +
-    dest;
+  var url = "https://tiket.tokopedia.com/kereta-api/search/?r=" + ori + "." + dest + "&d=" + date + "&a=" + adult + "&i=" + infant;
   // var url = "https://tiket.tokopedia.com/kereta-api/search/Surabaya-Surabaya.Gubeng-SGU/Bandung-Kiaracondong-KAC?adult=1&infant=0&trip=departure&dep_date=20-10-2019&ori=SGU&dest=KAC";
+  // NEW URL --> https://tiket.tokopedia.com/kereta-api/search/?r=SGU.KSL&d=20200722&a=1&i=0
   (async () => {
     try {
       let browser = await puppeteer.launch({
@@ -63,43 +42,42 @@ exports.index = function (req, res) {
         timeout: 0,
       });
 
-      await page.waitForSelector(".train-name", {
+      await page.waitForSelector(".name", {
         visible: true,
         timeout: 10000,
       });
 
       let data = await page.evaluate(() => {
-        let train_name = document.getElementsByClassName("train-name");
-        let train_class = document.getElementsByClassName("train-class");
-        let dept_time = document.getElementsByClassName("dept-time");
-        let arrival = document.getElementsByClassName("arrival-time");
-        let price = document.getElementsByClassName("price-amount-main");
-        let price1 = document.getElementsByClassName("price-amount-tail");
+        let train_name = document.getElementsByClassName("name");
+        let train_class = document.getElementsByClassName("class");
+        let time = document.querySelectorAll(".journey_route > div.time");
+        let price = document.getElementsByClassName("fare_title");
 
         var all_train = [];
 
-        for (var i = 0; i < train_name.length; i++) {
-          var real_price = price[i].innerText + price1[i].innerText;
-          var name = train_name[i].innerText;
-          name = name.replace(/\n/g, "-");
-          var status = name.split("-")[1];
-          name = name.split("-")[0];
-          if (status === undefined) {
-            status = "PENUH";
+        for (let index = 0; index < train_name.length; index++) {
+
+          if (index == 0) {
+            var dept_time = time[index].innerText;
+            var arr_time = time[index + 1].innerText;
+          } else {
+            var dept_time = time[index + 1].innerText;
+            var arr_time = time[index + 2].innerText;
           }
+
           all_train.push({
-            train: name,
-            status: status,
-            class: train_class[i].innerText,
-            dept_time: dept_time[i].innerText,
-            arr_time: arrival[i].innerText,
-            price: real_price,
+            train: train_name[index].innerText,
+            status: "Tersedia",
+            class: train_class[index].innerText,
+            dept_time: dept_time,
+            arr_time: arr_time,
+            price: price[index].innerText,
           });
         }
 
         let trains = {
           trains: all_train,
-          url: url,
+          // url: url,
         };
 
         return trains;
@@ -107,7 +85,7 @@ exports.index = function (req, res) {
 
       response.ok(data, res);
       await browser.close();
-      
+
     } catch (err) {
       var result = {
         msg: "Jadwal tidak ditemukan, coba cari rute lain.",
