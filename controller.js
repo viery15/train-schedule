@@ -23,11 +23,12 @@ exports.index = function (req, res) {
 
   date = date.replace(/-/g, '');
 
-  var url = "https://tiket.tokopedia.com/kereta-api/search/?r=" + ori + "." + dest + "&d=" + date + "&a=" + adult + "&i=" + infant;
+  let url = "https://tiket.tokopedia.com/kereta-api/search/?r=" + ori + "." + dest + "&d=" + date + "&a=" + adult + "&i=" + infant;
+
   // URL LAMA = "https://tiket.tokopedia.com/kereta-api/search/Surabaya-Surabaya.Gubeng-SGU/Bandung-Kiaracondong-KAC?adult=1&infant=0&trip=departure&dep_date=20-10-2019&ori=SGU&dest=KAC";
   // NEW URL --> https://tiket.tokopedia.com/kereta-api/search/?r=SGU.KSL&d=20200722&a=1&i=0
   (async () => {
-    try {
+    // try {
       let browser = await puppeteer.launch({
         // headless: false,
         args: [
@@ -76,25 +77,27 @@ exports.index = function (req, res) {
             price: price[index].innerText,
           });
         }
-
-        let trains = {
+        
+        var trains = {
           trains: all_train,
-          // url: url,
+          // url: url
         };
 
         return trains;
       });
 
+      data['url'] = url;
+
       response.ok(data, res);
       await browser.close();
 
-    } catch (err) {
-      var result = {
-        msg: "Jadwal tidak ditemukan, coba cari rute lain.",
-        url: url,
-      };
-      response.ok(result, res);
-      await browser.close();
-    }
+  //   } catch (err) {
+  //     var result = {
+  //       msg: "Jadwal tidak ditemukan, coba cari rute lain.",
+  //       url: url,
+  //     };
+  //     response.ok(result, res);
+  //     await browser.close();
+  //   }
   })();
 };
