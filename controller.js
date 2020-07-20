@@ -21,13 +21,15 @@ exports.index = function (req, res) {
   var adult = req.body.adult;
   var infant = req.body.infant;
 
+  date = date.replace(/-/g, '');
+
   var url = "https://tiket.tokopedia.com/kereta-api/search/?r=" + ori + "." + dest + "&d=" + date + "&a=" + adult + "&i=" + infant;
-  // var url = "https://tiket.tokopedia.com/kereta-api/search/Surabaya-Surabaya.Gubeng-SGU/Bandung-Kiaracondong-KAC?adult=1&infant=0&trip=departure&dep_date=20-10-2019&ori=SGU&dest=KAC";
+  // URL LAMA = "https://tiket.tokopedia.com/kereta-api/search/Surabaya-Surabaya.Gubeng-SGU/Bandung-Kiaracondong-KAC?adult=1&infant=0&trip=departure&dep_date=20-10-2019&ori=SGU&dest=KAC";
   // NEW URL --> https://tiket.tokopedia.com/kereta-api/search/?r=SGU.KSL&d=20200722&a=1&i=0
   (async () => {
     try {
       let browser = await puppeteer.launch({
-        headless: false,
+        // headless: false,
         args: [
           "--no-sandbox",
           "--disable-setuid-sandbox",
